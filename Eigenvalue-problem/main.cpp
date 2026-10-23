@@ -3,6 +3,8 @@
 #include <cmath>
 #include <string>
 
+double EPS = 1e-6;
+
 int main() {
     //Reading from file
     std::string filename;
@@ -30,11 +32,11 @@ int main() {
     }
     file.close();
 
-    bool flag_sym = true;
+    bool isSymmetric = true;
     for (int i = 1; i < n + 1; i++) {
         for (int j = 1; j < n + 1; j++) {
             if (A[i][j] != A[j][i]) {
-                flag_sym = false;
+                isSymmetric = false;
                 break;
             }
         }
