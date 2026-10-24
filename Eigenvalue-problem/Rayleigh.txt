@@ -1,0 +1,16 @@
+Eigenvalue = 0.997313 (steps = 3)
+Eigenvector:
+0.864461 0.00338916 0.244595 0.439169 
+
+Eigenvalue = 4.01142 (steps = 3)
+Eigenvector:
+-0.00343211 0.704259 0.620789 -0.344426 
+
+Eigenvalue = 2.00425 (steps = 4)
+Eigenvector:
+0.0119071 -0.709759 0.607555 -0.356337 
+
+Eigenvalue = 2.98702 (steps = 3)
+Eigenvector:
+-0.502548 -0.0157964 0.430896 0.749349 
+

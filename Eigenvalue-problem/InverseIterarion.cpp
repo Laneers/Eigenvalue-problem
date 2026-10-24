@@ -9,7 +9,7 @@
 extern double EPS;
 
 void InverseIterations(double** A_orig, int n, double* eigenvalues, double** eigenvectors) {
-    std::ofstream out("Inverse_iterations.txt");
+    std::ofstream out("InverseIterations_eigenvectors.txt");
 
     double* x = new double[n + 1];
     double* y = new double[n + 1];
@@ -113,81 +113,89 @@ void VerifyEigenvectors(double** A_orig, int n, double* eigenvalues, double** ei
     delete[] Ax;
 }
 
-void RayleighIteration(double** A_orig, int n, double** initial_eigenvectors,
-    double* refined_eigenvalues, double** refined_eigenvectors) {
-    std::ofstream out("Rayleigh.txt");
+void RayleighIteration(double** A, int n, double* initial_eigenvalues, double* eigenvalues, double** eigenvectors) {
+    std::ofstream out("Rayleigh_eigensystem.txt");
 
     double* x = new double[n + 1];
     double* y = new double[n + 1];
     double* Ax = new double[n + 1];
 
     double** M = new double* [n + 1];
-    for (int i = 1; i <= n; ++i) {
+    for (int i = 1; i < n + 1; ++i) {
         M[i] = new double[n + 1];
     }
 
+    int max_iterations = 100;
+
     for (int idx = 1; idx <= n; ++idx) {
+        double lambda = initial_eigenvalues[idx];
+        double lambda_old = lambda;
+
         for (int i = 1; i <= n; ++i) {
-            x[i] = initial_eigenvectors[i][idx];
+            x[i] = 1.0;
         }
-        double norm_x = vector_norm_2(x, n);
-        for (int i = 1; i <= n; ++i) x[i] /= norm_x;
+        double x0_norm = vector_norm_2(x, n);
+        for (int i = 1; i <= n; ++i) {
+            x[i] /= x0_norm;
+        }
 
-        int iter = 0;
-        double diff = 1.0;
-        double lambda = 0.0;
+        int step = 0;
 
-        while (diff > EPS && iter < 50) {
-            iter++;
-
-            //Ax = A * x
-            for (int i = 1; i <= n; ++i) {
-                Ax[i] = 0.0;
-                for (int j = 1; j <= n; ++j) {
-                    Ax[i] += A_orig[i][j] * x[j];
-                }
-            }
-            // lambda = (Ax, x)
-            double current_lambda = 0.0;
-            for (int i = 1; i <= n; ++i) {
-                current_lambda += Ax[i] * x[i];
-            }
-            lambda = current_lambda;
-
-            //M = A - lambda^(k) * E
+        for (int k = 1; k <= max_iterations; ++k) {
+            //M = A - lambda * E
             for (int i = 1; i <= n; ++i) {
                 for (int j = 1; j <= n; ++j) {
-                    M[i][j] = A_orig[i][j];
+                    M[i][j] = A[i][j];
                 }
                 M[i][i] -= lambda;
             }
 
-            //Solving (A - lambda*E) * y^(k+1) = x^(k)
             Gauss_method(M, y, x, n);
 
-			//Normalize the vector y
             double norm_y = vector_norm_2(y, n);
-
-            //Checking convergence
-            diff = 0.0;
-            for (int i = 1; i <= n; ++i) {
-                double next_x = y[i] / norm_y;
-                diff += std::min(std::pow(x[i] - next_x, 2), std::pow(x[i] + next_x, 2));
+            if (norm_y < 1e-15) {
+                break;
             }
-            diff = std::sqrt(diff);
-
             for (int i = 1; i <= n; ++i) {
                 x[i] = y[i] / norm_y;
             }
 
-            out << "Step = " << iter << ", eigenvalue = " << lambda << ", residual norm" << diff << "\n";
+            for (int i = 1; i <= n; ++i) {
+                Ax[i] = 0.0;
+                for (int j = 1; j <= n; ++j) {
+                    Ax[i] += A[i][j] * x[j];
+                }
+            }
+
+            //lambda = (Ax, x) / (x, x)
+            double sum = 0.0;
+            for (int i = 1; i <= n; ++i) {
+                sum += Ax[i] * x[i];
+            }
+            lambda = sum;
+
+            //Lambda convergence
+            if (k > 1 && std::fabs(lambda - lambda_old) < EPS) {
+                step = k;
+                break;
+            }
+            lambda_old = lambda;
+            step = k;
         }
 
-        refined_eigenvalues[idx] = lambda;
+        eigenvalues[idx] = lambda;
         for (int i = 1; i <= n; ++i) {
-            refined_eigenvectors[i][idx] = x[i];
+            eigenvectors[i][idx] = x[i];
         }
+
+        out << "Eigenvalue = " << lambda << " (steps = " << step << ")\n";
+        out << "Eigenvector:\n";
+        for (int i = 1; i <= n; ++i) {
+            out << x[i] << " ";
+        }
+        out << "\n\n";
     }
+
     out.close();
 
     for (int i = 1; i <= n; ++i) {

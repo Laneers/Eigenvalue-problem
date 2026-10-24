@@ -185,7 +185,6 @@ void verifyEigenvalues(double** A_original, int n, double* eigenvalues) {
 
     double trace_diff = std::fabs(trace_original - trace_eigenvalues);
 
-    std::cout << "Verification of QR method\n";
     std::cout << "Trace of matrix: " << trace_original << "\n";
     std::cout << "Sum of eigenvalues: " << trace_eigenvalues << "\n";
     std::cout << "Differ: " << trace_diff << "\n\n";
