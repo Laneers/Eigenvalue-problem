@@ -20,7 +20,7 @@ void Hessenberg(double** A, int n, bool isSymmetric = false) {
             //Evaluating only lower triangle
             if (isSymmetric) {
                 //Left roatations
-                for (int col = 1; col < k + 1; ++col) {
+                for (int col = 1; col < k; ++col) {
                     double tmp_k = alpha * A[k][col] + beta * A[l][col];
                     double tmp_l = -beta * A[k][col] + alpha * A[l][col];
                     A[k][col] = tmp_k;
@@ -72,24 +72,29 @@ void Hessenberg(double** A, int n, bool isSymmetric = false) {
             out << stepInfo;
             for (int i = 1; i < n + 1; i++) {
                 for (int j = 1; j < n + 1; j++) {
-                    out << A[i][j] << " ";
+                    double clean_val = A[i][j];
+                    /*if (std::fabs(clean_val) < 1e-12) {
+                        clean_val = 0.0;
+                    }*/
+                    out << clean_val << " ";
                 }
                 out << "\n";
             }
+            out << "\n";
         }
     }
     out.close();
 }
 
 void QRIterationShift(double** A, int m, int n) {
-    double sigma = A[m - 1][m - 1];
+    double sigma = A[m][m];
 
     for (int i = 1; i < m + 1; ++i) {
         A[i][i] -= sigma;
     }
 
-    double* c = new double[m - 1];
-    double* s = new double[m - 1];
+    double* c = new double[m];
+    double* s = new double[m];
 
     for (int i = 1; i < m; ++i) {
         int k = i;
@@ -137,34 +142,51 @@ void QRIterationShift(double** A, int m, int n) {
 void EigenvaluesQR(double** A, int n, double* eigenvalues) {
     std::ofstream out("QR_eigenvalues.txt");
 
-    double** H = new double* [n];
-    for (int i = 0; i < n; ++i) {
-        H[i] = new double[n];
-        for (int j = 0; j < n; ++j) H[i][j] = A[i][j];
+    double** H = new double* [n + 1];
+    for (int i = 1; i < n + 1; ++i) {
+        H[i] = new double[n + 1];
+        for (int j = 1; j < n + 1; ++j) H[i][j] = A[i][j];
     }
 
     int m = n;
     int step = 0;
 
     while (m > 1) {
-        while (std::fabs(H[m - 1][m - 2]) > EPS) {
+        while (std::fabs(H[m][m - 1]) > EPS) {
             QRIterationShift(H, m, n);
             step++;
         }
-        eigenvalues[m - 1] = H[m - 1][m - 1];
+        eigenvalues[m] = H[m][m];
 
-        out << eigenvalues[m - 1] << " (step = " << step << ")\n";
+        out << eigenvalues[m] << " (step = " << step << ")\n";
         m--;
         step = 0;
     }
 
     //The last eigenvalue
-    eigenvalues[0] = H[0][0];
-    out << eigenvalues[0] << "\n";
+    eigenvalues[1] = H[1][1];
+    out << eigenvalues[1] << "\n";
     out.close();
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = 1; i < n + 1; ++i) {
         delete[] H[i];
     }
     delete[] H;
+}
+
+void verifyEigenvalues(double** A_original, int n, double* eigenvalues) {
+    double trace_original = 0.0;
+    double trace_eigenvalues = 0.0;
+
+    for (int i = 1; i <= n; ++i) {
+        trace_original += A_original[i][i];
+        trace_eigenvalues += eigenvalues[i];
+    }
+
+    double trace_diff = std::fabs(trace_original - trace_eigenvalues);
+
+    std::cout << "Verification of QR method\n";
+    std::cout << "Trace of matrix: " << trace_original << "\n";
+    std::cout << "Sum of eigenvalues: " << trace_eigenvalues << "\n";
+    std::cout << "Differ: " << trace_diff << "\n\n";
 }

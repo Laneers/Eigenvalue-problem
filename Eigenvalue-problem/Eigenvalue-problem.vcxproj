@@ -123,8 +123,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Iterative-methods\Iterative-methods\Norms.cpp" />
+    <ClCompile Include="Gauss.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Арина\Desktop\Numerical_methods\Iterative-methods\Iterative-methods</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="InverseIterarion.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Арина\Desktop\Numerical_methods\Iterative-methods\Iterative-methods</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OR_Hessenberg.cpp" />
+    <ClCompile Include="QR_Hessenberg.cpp" />
+    <ClCompile Include="QR_Hessenberg.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Iterative-methods\Iterative-methods\Norms.h" />
+    <ClInclude Include="Gauss.h" />
+    <ClInclude Include="InverseIteration.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
