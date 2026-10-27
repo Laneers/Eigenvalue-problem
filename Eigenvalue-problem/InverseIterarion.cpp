@@ -56,10 +56,11 @@ void InverseIterations(double** A_orig, int n, double* eigenvalues, double** eig
             for (int i = 1; i <= n; ++i) {
                 double next_x = y[i] / norm_y;
                 //Checking the minimum distance considering the sign ambiguity of eigenvectors
-                diff += std::min(std::pow(x[i] - next_x, 2), std::pow(x[i] + next_x, 2));
+                diff += std::min((x[i] - next_x) * (x[i] - next_x), (x[i] + next_x) * (x[i] + next_x));
             }
             diff = std::sqrt(diff);
 
+			//Normalize the vector y to get the next approximation of the eigenvector
             for (int i = 1; i <= n; ++i) {
                 x[i] = y[i] / norm_y;
             }
@@ -167,7 +168,7 @@ void RayleighIteration(double** A, int n, double* initial_eigenvalues, double* e
                 }
             }
 
-            //lambda = (Ax, x) / (x, x)
+			//lambda = (Ax, x) / (x, x), (x, x) = 1 since x is normalized
             double sum = 0.0;
             for (int i = 1; i <= n; ++i) {
                 sum += Ax[i] * x[i];

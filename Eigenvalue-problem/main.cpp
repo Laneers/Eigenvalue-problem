@@ -63,30 +63,30 @@ int main() {
 	InverseIterations(A_original, n, eigenvalues, eigenvectors);
     VerifyEigenvectors(A_original, n, eigenvalues, eigenvectors);
 
-    double* refined_eigenvalues = new double[n + 1];
-    double** refined_eigenvectors = new double* [n + 1];
+    double* relay_eigenvalues = new double[n + 1];
+    double** relay_eigenvectors = new double* [n + 1];
     for (int i = 1; i <= n; i++) {
-        refined_eigenvectors[i] = new double[n + 1];
+        relay_eigenvectors[i] = new double[n + 1];
     }
 
     std::cout << "---Rayleigh iterations---\n\n";
-    RayleighIteration(A_original, n, eigenvalues, refined_eigenvalues, refined_eigenvectors);
-    verifyEigenvalues(A_original, n, refined_eigenvalues);
-    VerifyEigenvectors(A_original, n, refined_eigenvalues, refined_eigenvectors);
+    RayleighIteration(A_original, n, eigenvalues, relay_eigenvalues, relay_eigenvectors);
+    verifyEigenvalues(A_original, n, relay_eigenvalues);
+    VerifyEigenvectors(A_original, n, relay_eigenvalues, relay_eigenvectors);
 
     //Destructors
     for (int i = 1; i <= n; i++) {
         delete[] A_original[i];
         delete[] A_Hessenberg[i];
         delete[] eigenvectors[i];
-        delete[] refined_eigenvectors[i];
+        delete[] relay_eigenvectors[i];
     }
     delete[] A_original;
     delete[] A_Hessenberg;
     delete[] eigenvalues;
     delete[] eigenvectors;
-    delete[] refined_eigenvalues;
-    delete[] refined_eigenvectors;
+    delete[] relay_eigenvalues;
+    delete[] relay_eigenvectors;
 
     return 0;
 }

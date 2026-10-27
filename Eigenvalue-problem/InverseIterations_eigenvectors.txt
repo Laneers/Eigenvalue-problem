@@ -1,0 +1,12 @@
+Eigenvalue = 0.887752, eigenvector (step = 7)
+0.864461 0.00338918 0.244595 0.439169 
+
+Eigenvalue = 3.94219, eigenvector (step = 7)
+-0.00343211 0.704259 0.620789 -0.344426 
+
+Eigenvalue = 2.17779, eigenvector (step = 11)
+0.011907 -0.709759 0.607555 -0.356337 
+
+Eigenvalue = 2.99228, eigenvector (step = 4)
+-0.502548 -0.0157964 0.430896 0.749349 
+
