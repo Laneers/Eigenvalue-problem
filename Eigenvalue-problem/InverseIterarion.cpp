@@ -207,3 +207,179 @@ void RayleighIteration(double** A, int n, double* initial_eigenvalues, double* e
     delete[] y;
     delete[] Ax;
 }
+
+
+
+//Demonstration for 6 question
+void InverseIterations_bad(double** A_orig, int n, double* eigenvalues, double** eigenvectors) {
+    std::ofstream out("InverseIterations_eigenvectors_bad.txt");
+
+    double* x = new double[n + 1];
+    double* y = new double[n + 1];
+
+    double** M = new double* [n + 1];
+    for (int i = 1; i < n + 1; ++i) {
+        M[i] = new double[n + 1];
+    }
+
+    // Want to find eigenvalues[1], but take eigenvector for eigenvalues[2] 
+    int idx = 1;
+    double lambda = eigenvalues[idx];
+
+    for (int i = 1; i < n + 1; ++i) {
+        for (int j = 1; j < n + 1; ++j) {
+            M[i][j] = A_orig[i][j];
+        }
+        M[i][i] -= lambda;
+    }
+
+    if (n >= 2) {
+        for (int i = 1; i <= n; ++i) {
+            x[i] = eigenvectors[i][2];
+        }
+    }
+    else {
+        for (int i = 1; i < n + 1; ++i) x[i] = 1.0;
+    }
+
+    double norm_x = vector_norm_2(x, n);
+    for (int i = 1; i < n + 1; ++i) x[i] /= norm_x;
+
+    int step = 0;
+    double diff = 1.0;
+
+    while (diff > EPS && step < 100) {
+        step++;
+
+        Gauss_method(M, y, x, n);
+
+        double norm_y = vector_norm_2(y, n);
+
+        diff = 0.0;
+        for (int i = 1; i <= n; ++i) {
+            double next_x = y[i] / norm_y;
+            diff += std::min((x[i] - next_x) * (x[i] - next_x), (x[i] + next_x) * (x[i] + next_x));
+        }
+        diff = std::sqrt(diff);
+
+        for (int i = 1; i <= n; ++i) {
+            x[i] = y[i] / norm_y;
+        }
+    }
+
+    out << "Eigenvalue = " << eigenvalues[idx] << ", eigenvector (step = " << step << ")\n";
+    for (int i = 1; i <= n; ++i) {
+        out << x[i] << " ";
+    }
+    out << "\n\n";
+    out.close();
+
+    for (int i = 1; i <= n; ++i) {
+        delete[] M[i];
+    }
+    delete[] M;
+    delete[] x;
+    delete[] y;
+}
+
+void RayleighIteration_bad(double** A, int n, double* initial_eigenvalues, double** eigenvectors) {
+    std::ofstream out("Rayleigh_eigensystem_bad.txt");
+
+    double* x = new double[n + 1];
+    double* y = new double[n + 1];
+    double* Ax = new double[n + 1];
+
+    double** M = new double* [n + 1];
+    for (int i = 1; i < n + 1; ++i) {
+        M[i] = new double[n + 1];
+    }
+
+    // Initialization x for eigenvalue[3]
+	int idx = 2;
+    if (n >= 2) {
+        for (int i = 1; i <= n; ++i) {
+            x[i] = eigenvectors[i][2];
+        }
+    }
+    else {
+        for (int i = 1; i <= n; ++i) {
+            x[i] = 1.0;
+        }
+    }
+
+    double x0_norm = vector_norm_2(x, n);
+    for (int i = 1; i <= n; ++i) {
+        x[i] /= x0_norm;
+    }
+
+    //lambda = (Ax, x) / (x, x), (x, x) = 1 since x is normalized
+    double sum = 0.0;
+    for (int i = 1; i <= n; ++i) {
+        sum += Ax[i] * x[i];
+    }
+    double lambda = sum;
+    
+    //double lambda = initial_eigenvalues[1];
+    double lambda_old = lambda;
+
+    int step = 0;
+	int max_iterations = 100;
+
+    for (int k = 1; k <= max_iterations; ++k) {
+        //M = A - lambda * E
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                M[i][j] = A[i][j];
+            }
+            M[i][i] -= lambda;
+        }
+
+        Gauss_method(M, y, x, n);
+
+        double norm_y = vector_norm_2(y, n);
+        if (norm_y < 1e-15) {
+            break;
+        }
+        for (int i = 1; i <= n; ++i) {
+            x[i] = y[i] / norm_y;
+        }
+
+        for (int i = 1; i <= n; ++i) {
+            Ax[i] = 0.0;
+            for (int j = 1; j <= n; ++j) {
+                Ax[i] += A[i][j] * x[j];
+            }
+        }
+
+        //lambda = (Ax, x) / (x, x), (x, x) = 1 since x is normalized
+        double sum = 0.0;
+        for (int i = 1; i <= n; ++i) {
+            sum += Ax[i] * x[i];
+        }
+        lambda = sum;
+
+        //Lambda convergence
+        if (k > 1 && std::fabs(lambda - lambda_old) < EPS) {
+            step = k;
+            break;
+        }
+        lambda_old = lambda;
+        step = k;
+    }
+       
+    out << "Eigenvalue = " << lambda << " (steps = " << step << ")\n";
+    out << "Eigenvector:\n";
+    for (int i = 1; i <= n; ++i) {
+        out << x[i] << " ";
+    }
+    out << "\n\n";
+    out.close();
+
+    for (int i = 1; i <= n; ++i) {
+        delete[] M[i];
+    }
+    delete[] M;
+    delete[] x;
+    delete[] y;
+    delete[] Ax;
+}

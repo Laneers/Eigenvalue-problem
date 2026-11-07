@@ -74,6 +74,10 @@ int main() {
     verifyEigenvalues(A_original, n, relay_eigenvalues);
     VerifyEigenvectors(A_original, n, relay_eigenvalues, relay_eigenvectors);
 
+    //Demonstration for 6 question
+    InverseIterations_bad(A_original, n, eigenvalues, eigenvectors);
+    RayleighIteration_bad(A_original, n, eigenvalues, eigenvectors);
+
     //Destructors
     for (int i = 1; i <= n; i++) {
         delete[] A_original[i];
