@@ -312,6 +312,13 @@ void RayleighIteration_bad(double** A, int n, double* initial_eigenvalues, doubl
         x[i] /= x0_norm;
     }
 
+    for (int i = 1; i <= n; ++i) {
+        Ax[i] = 0.0;
+        for (int j = 1; j <= n; ++j) {
+            Ax[i] += A[i][j] * x[j];
+        }
+    }
+
     //lambda = (Ax, x) / (x, x), (x, x) = 1 since x is normalized
     double sum = 0.0;
     for (int i = 1; i <= n; ++i) {
